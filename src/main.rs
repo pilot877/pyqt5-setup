@@ -1,6 +1,8 @@
 use std::path::Path;
 use std::fs;
 use std::env;
+use std::io::stdin;
+use std::io;
 
 mod vars;
 
@@ -13,45 +15,83 @@ fn main(){
         } else if &args[1] == "init" {
             init();
         } else {
-            println!("Option not found, run the command\x1b[1m pyqt5-setup help\x1b[0m for help");
+            println!("\x1b[31m\x1b[1mError!\x1b[0m Option not found, run the command\x1b[1m pyqt5-setup help\x1b[0m for help");
         }
     } else if args.len() < 3 {
-        println!("Error: too little args\nrun the command\x1b[1m pyqt5-setup help\x1b[0m for help");
+        println!("\x1b[31m\x1b[1mError!\x1b[0m Too little args\nrun the command\x1b[1m pyqt5-setup help\x1b[0m for help");
     } else if args.len() > 2{
-        println!("Error: too many args\nrun the command\x1b[1m pyqt5-setup help\x1b[0m for help");
+        println!("\x1b[31m\x1b[1mError!\x1b[0m Too many args\nrun the command\x1b[1m pyqt5-setup help\x1b[0m for help");
     }
-    
-    
-
-    
+    // Add more error checking etc. here    
 }
 
 
 fn init() -> std::io::Result<()> {
-    
-
     let mut files = vars::get_vars();
-
-    // let mut file = fs::File::create("main.py")?;
+    
     fs::create_dir("uis");
     fs::create_dir("unconverted_uis");
 
+    let mut real_string = String::new();
+
     if !Path::new("main.py").exists() {
         fs::write("main.py", format!("{}", files[0]))?;
+        println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m main.py created");
     } else {
-        println!("Error: main.py exists, program will not overwrite. If you wish to create a new main.py file, delete the old one");
+        real_string = "".to_string();
+        print!("\x1b[33;1m\x1b[1mWarning!\x1b[0m main.py exists, would you like to overwrite it? [y/N] ");
+        io::Write::flush(&mut io::stdout()).expect("flush failed!");
+        stdin().read_line(&mut real_string).expect("Failed to read line!");
+        real_string = real_string.to_string();
+        let mut input_string = real_string.trim();
+        if input_string == "y" || input_string == "N" {
+            fs::write("main.py", format!("{}", files[0]))?;
+            println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m main.py overwritten");
+        } else if input_string == "n" || input_string == "N" || input_string == ""{
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m main.py exists, program will not overwrite");
+        } else {
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m Unknown input character '{}'. main.py exists, program will not overwrite", input_string);
+        }        
     }
+
     if !Path::new("uis/Ui_MainWindow.py").exists() {
         fs::write("uis/Ui_MainWindow.py", format!("{}", files[1]))?;
-
+        println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m Ui_MainWindow.py created");
     } else {
-        println!("Error: Ui_MainWindow.py exists, program will not overwrite. If you wish to create a new Ui_MainWindow.py file, delete the old one");
+        real_string = "".to_string();
+        print!("\x1b[33;1m\x1b[1mWarning!\x1b[0m Ui_MainWindow.py exists, would you like to overwrite it? [y/N] ");
+        io::Write::flush(&mut io::stdout()).expect("flush failed!");
+        stdin().read_line(&mut real_string).expect("Failed to read line!");
+        real_string = real_string.to_string();
+        let mut input_string = real_string.trim();
+        if input_string == "y" || input_string == "N" {
+            fs::write("uis/Ui_MainWindow.py", format!("{}", files[1]))?;
+            println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m Ui_MainWindow.py overwritten");
+        } else if input_string == "n" || input_string == "N" || input_string == ""{
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m Ui_MainWindow.py exists, program will not overwrite");
+        } else {
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m Unknown input character '{}'. Ui_MainWindow.py exists, program will not overwrite", input_string);
+        }
     }
+
     if !Path::new("unconverted_uis/MainWindow.ui").exists() {
         fs::write("unconverted_uis/MainWindow.ui", format!("{}", files[2]))?;
+        println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m MainWindow.ui created");
     } else {
-        println!("Error: MainWindow.ui exists, program will not overwrite. If you wish to create a new MainWindow.ui  file, delete the old one");
+        real_string = "".to_string();
+        print!("\x1b[33;1m\x1b[1mWarning!\x1b[0m MainWindow.py exists, would you like to overwrite it? [y/N] ");
+        io::Write::flush(&mut io::stdout()).expect("flush failed!");
+        stdin().read_line(&mut real_string).expect("Failed to read line!");
+        real_string = real_string.to_string();
+        let mut input_string = real_string.trim();
+        if input_string == "y" || input_string == "N" {
+            fs::write("unconverted_uis/MainWindow.ui", format!("{}", files[2]))?;
+            println!("\x1b[32;1m\x1b[1mSuccess!\x1b[0m MainWindow.ui overwritten");
+        } else if input_string == "n" || input_string == "N" || input_string == ""{
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m MainWindow.ui exists, program will not overwrite");
+        } else {
+            println!("\x1b[31;1m\x1b[1mError!\x1b[0m Unknown input character '{}'. MainWindow.ui exists, program will not overwrite", input_string);
+        }
     }
-    Ok(())
-
+    Ok(()) // Do something with this lol.
 }
